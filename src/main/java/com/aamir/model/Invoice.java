@@ -1,4 +1,4 @@
-package com.aamir.invoice;
+package com.aamir.model;
 
 import java.util.List;
 

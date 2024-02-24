@@ -1,5 +1,8 @@
 package com.aamir.invoice;
 
+import com.aamir.model.Invoice;
+import com.aamir.model.Performance;
+import com.aamir.model.Play;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

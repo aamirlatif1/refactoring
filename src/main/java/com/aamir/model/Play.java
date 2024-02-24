@@ -1,4 +1,4 @@
-package com.aamir.invoice;
+package com.aamir.model;
 
 public class Play {
     private final String name;
