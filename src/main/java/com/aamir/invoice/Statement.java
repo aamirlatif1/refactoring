@@ -1,6 +1,7 @@
 package com.aamir.invoice;
 
 import com.aamir.model.Invoice;
+import com.aamir.model.Performance;
 import com.aamir.model.Play;
 
 import java.text.NumberFormat;
@@ -33,35 +34,18 @@ public class Statement {
             final var format = NumberFormat.getCurrencyInstance(Locale.US);
 
             for (var perf : invoice.getPerformances()) {
-                final var play = plays.get(perf.getPlayID());
-                var thisAmount = 0;
-                switch (play.getType()) {
-                    case "tragedy" -> {
-                        thisAmount = 40_000;
-                        if (perf.getAudience() > 30) {
-                            thisAmount += 1000 * (perf.getAudience() - 30);
-                        }
-                    }
-                    case "comedy" -> {
-                        thisAmount = 30_000;
-                        if (perf.getAudience() > 20) {
-                            thisAmount += 10_000 + 500 * (perf.getAudience() - 20);
-                        }
-                        thisAmount += 300 * perf.getAudience();
-                    }
-                    default -> throw new RuntimeException(String.format("unknown type: %s", play.getType()));
-                }
+                var thisAmount = amountFor(perf);
 
                 // add volume credits
                 volumeCredits += Math.max(perf.getAudience() - 30, 0);
                 // add extra credit for every ten comedy attendees
-                if ("comedy".equals(play.getType())) {
+                if ("comedy".equals(playFor(perf).getType())) {
                     volumeCredits += Math.floor((float) perf.getAudience() / 5);
                 }
 
                 // print line for this order
                 result += String.format("  %s: %s (%s seats)\n",
-                        play.getName(), format.format(thisAmount / 100), perf.getAudience());
+                        playFor(perf).getName(), format.format(thisAmount / 100), perf.getAudience());
 
                 totalAmount += thisAmount;
             }
@@ -70,6 +54,30 @@ public class Statement {
             return result;
         }
 
+        private Play playFor(Performance perf) {
+            return plays.get(perf.getPlayID());
+        }
+
+        private int amountFor(Performance aPerformance) {
+            int result;
+            switch (playFor(aPerformance).getType()) {
+                case "tragedy" -> {
+                    result = 40_000;
+                    if (aPerformance.getAudience() > 30) {
+                        result += 1000 * (aPerformance.getAudience() - 30);
+                    }
+                }
+                case "comedy" -> {
+                    result = 30_000;
+                    if (aPerformance.getAudience() > 20) {
+                        result += 10_000 + 500 * (aPerformance.getAudience() - 20);
+                    }
+                    result += 300 * aPerformance.getAudience();
+                }
+                default -> throw new RuntimeException(String.format("unknown type: %s", playFor(aPerformance).getType()));
+            }
+            return result;
+        }
     }
 
 }
