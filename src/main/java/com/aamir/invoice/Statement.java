@@ -31,26 +31,31 @@ public class Statement {
 
 
             var result = String.format("Statement for %s\n", invoice.getCustomer());
-            final var format = NumberFormat.getCurrencyInstance(Locale.US);
 
             for (var perf : invoice.getPerformances()) {
-                var thisAmount = amountFor(perf);
-
-                // add volume credits
-                volumeCredits += Math.max(perf.getAudience() - 30, 0);
-                // add extra credit for every ten comedy attendees
-                if ("comedy".equals(playFor(perf).getType())) {
-                    volumeCredits += Math.floor((float) perf.getAudience() / 5);
-                }
+                volumeCredits += volumeCreditsFor( perf);
 
                 // print line for this order
                 result += String.format("  %s: %s (%s seats)\n",
-                        playFor(perf).getName(), format.format(thisAmount / 100), perf.getAudience());
+                        playFor(perf).getName(), format(amountFor(perf) / 100), perf.getAudience());
 
-                totalAmount += thisAmount;
+                totalAmount += amountFor(perf);
             }
-            result += String.format("Amount owed is %s\n", format.format(totalAmount / 100));
+            result += String.format("Amount owed is %s\n", format(totalAmount / 100));
             result += String.format("You earned %s credits\n", volumeCredits);
+            return result;
+        }
+
+        private String format(int number) {
+            return NumberFormat.getCurrencyInstance(Locale.US).format(number);
+        }
+
+        private int volumeCreditsFor(Performance aPerformance) {
+            var result = Math.max(aPerformance.getAudience() - 30, 0);
+            // add extra credit for every ten comedy attendees
+            if ("comedy".equals(playFor(aPerformance).getType())) {
+                result += Math.floor((float) aPerformance.getAudience() / 5);
+            }
             return result;
         }
 
