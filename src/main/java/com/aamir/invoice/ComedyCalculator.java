@@ -12,15 +12,15 @@ public class ComedyCalculator extends PerformanceCalculator {
     @Override
     int amount() {
         var result = 30_000;
-        if (getPerformance().getAudience() > 20) {
-            result += 10_000 + 500 * (getPerformance().getAudience() - 20);
+        if (performance.audience() > 20) {
+            result += 10_000 + 500 * (performance.audience() - 20);
         }
-        result += 300 * getPerformance().getAudience();
+        result += 300 * performance.audience();
         return result;
     }
 
     @Override
     int volumeCredits() {
-        return super.volumeCredits() + (int) Math.floor((float) getPerformance().getAudience() / 5);
+        return super.volumeCredits() + (int) Math.floor((float) performance.audience() / 5);
     }
 }

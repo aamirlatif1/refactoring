@@ -12,8 +12,8 @@ public class TragedyCalculator extends PerformanceCalculator {
     @Override
     int amount() {
         var result = 40_000;
-        if (getPerformance().getAudience() > 30) {
-            result += 1000 * (getPerformance().getAudience() - 30);
+        if (performance.audience() > 30) {
+            result += 1000 * (performance.audience() - 30);
         }
         return result;
     }

@@ -16,13 +16,13 @@ record StatementDataCreator(Invoice invoice, Map<String, Play> plays) {
     private PerformanceExt enrichPerformance(Performance aPerformance) {
         final var calculator = PerformanceCalculator.createCalculator(aPerformance, playFor(aPerformance));
         final var result = new PerformanceExt(aPerformance);
-        result.setPlay(calculator.getPlay());
+        result.setPlay(calculator.play);
         result.setAmount(calculator.amount());
         result.setVolumeCreditFor(calculator.volumeCredits());
         return result;
     }
 
     private Play playFor(Performance perf) {
-        return plays.get(perf.getPlayID());
+        return plays.get(perf.playID());
     }
 }

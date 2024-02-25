@@ -1,16 +1,18 @@
 package com.aamir.model;
 
-public class PerformanceExt extends Performance {
+public class PerformanceExt {
 
     private Play play;
     private int amount;
     private int volumeCreditFor;
 
+    private final Performance performance;
+
     public PerformanceExt(Performance aPerformance) {
-        super(aPerformance.getPlayID(), aPerformance.getAudience());
+        this.performance = aPerformance;
     }
 
-    public int getAmount() {
+    public int amount() {
         return amount;
     }
 
@@ -18,7 +20,7 @@ public class PerformanceExt extends Performance {
         this.amount = amount;
     }
 
-    public int getVolumeCreditFor() {
+    public int volumeCreditFor() {
         return volumeCreditFor;
     }
 
@@ -26,11 +28,15 @@ public class PerformanceExt extends Performance {
         this.volumeCreditFor = volumeCreditFor;
     }
 
-    public Play getPlay() {
+    public Play play() {
         return play;
     }
 
     public void setPlay(Play play) {
         this.play = play;
+    }
+
+    public Performance performance(){
+        return performance;
     }
 }
