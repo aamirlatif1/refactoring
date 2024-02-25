@@ -11,31 +11,43 @@ import java.util.stream.Collectors;
 public class Statement {
 
     public String statement(Invoice invoice, Map<String, Play> plays) {
-        return new Generator(invoice, plays).generator();
+        return new StatementGenerator(invoice, plays).statement();
     }
 
-    private class Generator {
+    public String htmlStatement(Invoice invoice, Map<String, Play> plays) {
+        return new StatementGenerator(invoice, plays).htmlStatement();
+    }
+
+
+    private static class StatementGenerator {
 
         private final Invoice invoice;
         private final Map<String, Play> plays;
 
-        public Generator(Invoice invoice, Map<String, Play> plays) {
+        public StatementGenerator(Invoice invoice, Map<String, Play> plays) {
             this.invoice = invoice;
             this.plays = plays;
         }
 
-        public String generator() {
-            var statementData = new StatementData(invoice.getCustomer(), invoice.getPerformances().stream().map(this::enrichPerformance).collect(Collectors.toList()));
-            statementData.setTotalAmount(totalAmount(statementData));
-            statementData.setTotalVolumeCredits(totalVolumeCredits(statementData));
-            return renderPlainText(statementData);
+        public String statement() {
+            return renderPlainText(createStatementData());
         }
 
-        private PerformanceExt enrichPerformance(Performance aPerformance) {
-            var result = new PerformanceExt(aPerformance);
-            result.setPlay(playFor(aPerformance));
-            result.setAmount(amountFor(result));
-            result.setVolumeCreditFor(volumeCreditsFor(result));
+        public String htmlStatement() {
+            return renderPlainText(createStatementData());
+        }
+
+        private String renderHtml(StatementData data) {
+            var result = String.format("<h1>Statement for %s</h1>\n", data.getCustomer());
+            result += "<table>\n";
+            result += "<tr><th>play</th><th>seats</th><th>cost</th></tr>";
+            for (var perf : data.getPerformances()) {
+                result += String.format("  <tr><td>%s</td><td>%s</td>", perf.getPlay().getName(), perf.getAudience());
+                result += String.format("<td>%s</td></tr>\n", usd(perf.getAmount()));
+            }
+            result += "</table>\n";
+            result += String.format("<p>Amount owed is <em>%s</em></p>\n", usd(data.getTotalAmount()));
+            result += String.format("<p>You earned <em>%s</em> credits</p>\n", data.getTotalVolumeCredits());
             return result;
         }
 
@@ -50,60 +62,41 @@ public class Statement {
             return result;
         }
 
-        private int totalAmount(StatementData data) {
-            var result = 0;
-            for (var perf : data.getPerformances()) {
-                result += perf.getAmount();
-            }
+        public StatementData createStatementData() {
+            final var result = new StatementData(invoice.getCustomer(),
+                    invoice.getPerformances().stream().map(this::enrichPerformance)
+                            .collect(Collectors.toList()));
+            result.setTotalAmount(totalAmount(result));
+            result.setTotalVolumeCredits(totalVolumeCredits(result));
             return result;
         }
 
-        private int totalVolumeCredits(StatementData data) {
-            var result = 0;
-            for (var perf : data.getPerformances()) {
-                result += perf.getVolumeCreditFor();
-            }
+
+        private PerformanceExt enrichPerformance(Performance aPerformance) {
+            final var calculator = PerformanceCalculator.createCalculator(aPerformance, playFor(aPerformance));
+            final var result = new PerformanceExt(aPerformance);
+            result.setPlay(calculator.getPlay());
+            result.setAmount(calculator.amount());
+            result.setVolumeCreditFor(calculator.volumeCredits());
             return result;
+        }
+
+        private int totalAmount(StatementData data) {
+            return data.getPerformances().stream()
+                    .mapToInt(PerformanceExt::getAmount).sum();
+        }
+
+        private int totalVolumeCredits(StatementData data) {
+            return data.getPerformances().stream()
+                    .mapToInt(PerformanceExt::getVolumeCreditFor).sum();
         }
 
         private String usd(int number) {
             return NumberFormat.getCurrencyInstance(Locale.US).format(number / 100);
         }
 
-        private int volumeCreditsFor(PerformanceExt aPerformance) {
-            var result = Math.max(aPerformance.getAudience() - 30, 0);
-            // add extra credit for every ten comedy attendees
-            if ("comedy".equals(aPerformance.getPlay().getType())) {
-                result += Math.floor((float) aPerformance.getAudience() / 5);
-            }
-            return result;
-        }
-
-        private int amountFor(PerformanceExt aPerformance) {
-            int result;
-            switch (aPerformance.getPlay().getType()) {
-                case "tragedy" -> {
-                    result = 40_000;
-                    if (aPerformance.getAudience() > 30) {
-                        result += 1000 * (aPerformance.getAudience() - 30);
-                    }
-                }
-                case "comedy" -> {
-                    result = 30_000;
-                    if (aPerformance.getAudience() > 20) {
-                        result += 10_000 + 500 * (aPerformance.getAudience() - 20);
-                    }
-                    result += 300 * aPerformance.getAudience();
-                }
-                default ->
-                        throw new RuntimeException(String.format("unknown type: %s", aPerformance.getPlay().getType()));
-            }
-            return result;
-        }
-
         private Play playFor(Performance perf) {
             return plays.get(perf.getPlayID());
         }
     }
-
 }
