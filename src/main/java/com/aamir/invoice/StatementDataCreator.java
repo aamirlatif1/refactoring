@@ -9,8 +9,7 @@ record StatementDataCreator(Invoice invoice, Map<String, Play> plays) {
 
     public StatementData createData() {
         return new StatementData(invoice.customer(),
-                invoice.performances().stream().map(this::enrichPerformance)
-                        .collect(Collectors.toList()));
+                invoice.performances().stream().map(this::enrichPerformance).collect(Collectors.toList()));
     }
 
     private PerformanceExt enrichPerformance(Performance aPerformance) {

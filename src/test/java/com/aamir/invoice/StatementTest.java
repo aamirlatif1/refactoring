@@ -15,7 +15,7 @@ public class StatementTest {
     @Test
     public void generatePlainTextStatement() {
         // given
-        Statement statement = new Statement();
+        StatementGenerator statement = new StatementGenerator();
         String expectedStatement = """
                 Statement for BigCo
                   Hamlet: $650.00 (55 seats)
@@ -48,7 +48,7 @@ public class StatementTest {
     @Test
     public void generateHtmlStatement() {
         // given
-        Statement statement = new Statement();
+        StatementGenerator statement = new StatementGenerator();
         String expectedStatement = """
                 <h1>Statement for BigCo</h1>
                 <table>

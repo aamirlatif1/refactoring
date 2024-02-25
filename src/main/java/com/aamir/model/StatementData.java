@@ -3,16 +3,16 @@ package com.aamir.model;
 import java.util.List;
 
 public class StatementData {
-    private final String Customer;
+    private final String customer;
     private final List<PerformanceExt> performances;
 
     public StatementData(String customer, List<PerformanceExt> performances) {
-        Customer = customer;
+        this.customer = customer;
         this.performances = performances;
     }
 
     public String customer() {
-        return Customer;
+        return customer;
     }
 
     public List<PerformanceExt> performances() {

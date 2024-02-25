@@ -11,16 +11,16 @@ import java.util.Map;
 import static java.lang.String.format;
 
 
-public class Statement {
+public class StatementGenerator {
 
     public String statement(Invoice invoice, Map<String, Play> plays) {
-        final var statementGenerator = new StatementDataCreator(invoice, plays);
-        return renderPlainText(statementGenerator.createData());
+        final var dataCreator = new StatementDataCreator(invoice, plays);
+        return renderPlainText(dataCreator.createData());
     }
 
     public String htmlStatement(Invoice invoice, Map<String, Play> plays) {
-        final var statementGenerator = new StatementDataCreator(invoice, plays);
-        return renderHtml(statementGenerator.createData());
+        final var dataCreator = new StatementDataCreator(invoice, plays);
+        return renderHtml(dataCreator.createData());
     }
 
     private String renderHtml(StatementData data) {
