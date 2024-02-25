@@ -35,8 +35,8 @@ public class PerformanceExt {
     public void setPlay(Play play) {
         this.play = play;
     }
-
-    public Performance performance(){
-        return performance;
+    
+    public int audience() {
+        return performance.audience();
     }
 }

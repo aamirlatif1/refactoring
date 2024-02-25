@@ -28,7 +28,7 @@ public class Statement {
         result.append("<table>\n");
         result.append("<tr><th>play</th><th>seats</th><th>cost</th></tr>\n");
         for (var perf : data.performances()) {
-            result.append(format("  <tr><td>%s</td><td>%s</td>", perf.play().name(), perf.performance().audience()));
+            result.append(format("  <tr><td>%s</td><td>%s</td>", perf.play().name(), perf.audience()));
             result.append(format("<td>%s</td></tr>\n", usd(perf.amount())));
         }
         result.append("</table>\n");
@@ -40,7 +40,7 @@ public class Statement {
     private String renderPlainText(StatementData data) {
         var result = new StringBuilder(format("Statement for %s\n", data.customer()));
         for (var perf : data.performances()) {
-            result.append(format("  %s: %s (%s seats)\n", perf.play().name(), usd(perf.amount()), perf.performance().audience()));
+            result.append(format("  %s: %s (%s seats)\n", perf.play().name(), usd(perf.amount()), perf.audience()));
         }
         result.append(format("Amount owed is %s\n", usd(data.totalAmount())));
         result.append(format("You earned %s credits\n", data.totalVolumeCredits()));
