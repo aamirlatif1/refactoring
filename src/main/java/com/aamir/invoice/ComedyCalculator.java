@@ -21,6 +21,6 @@ public class ComedyCalculator extends PerformanceCalculator {
 
     @Override
     int volumeCredits() {
-        return super.volumeCredits() + (int)Math.floor((float) getPerformance().getAudience() / 5);
+        return super.volumeCredits() + (int) Math.floor((float) getPerformance().getAudience() / 5);
     }
 }

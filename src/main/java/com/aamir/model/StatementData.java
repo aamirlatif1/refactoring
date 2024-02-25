@@ -4,10 +4,8 @@ import java.util.List;
 
 public class StatementData {
     private final String Customer;
-    private final List<PerformanceExt> performances;
 
-    private int totalAmount;
-    private int totalVolumeCredits;
+    private final List<PerformanceExt> performances;
 
     public StatementData(String customer, List<PerformanceExt> performances) {
         Customer = customer;
@@ -22,20 +20,15 @@ public class StatementData {
         return performances;
     }
 
-    public int getTotalAmount() {
-        return totalAmount;
+
+    public int totalAmount() {
+        return performances.stream()
+                .mapToInt(PerformanceExt::getAmount).sum();
     }
 
-    public void setTotalAmount(int totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public int getTotalVolumeCredits() {
-        return totalVolumeCredits;
-    }
-
-    public void setTotalVolumeCredits(int totalVolumeCredits) {
-        this.totalVolumeCredits = totalVolumeCredits;
+    public int totalVolumeCredits() {
+        return performances.stream()
+                .mapToInt(PerformanceExt::getVolumeCreditFor).sum();
     }
 
 }

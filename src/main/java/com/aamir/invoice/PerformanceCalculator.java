@@ -15,11 +15,11 @@ public abstract class PerformanceCalculator {
     }
 
     public static PerformanceCalculator createCalculator(Performance performance, Play play) {
-        return switch (play.getType()) {
+        return switch (play.type()) {
             case "tragedy" -> new TragedyCalculator(performance, play);
 
             case "comedy" -> new ComedyCalculator(performance, play);
-            default -> throw new RuntimeException(String.format("unknown type: %s", play.getType()));
+            default -> throw new RuntimeException(String.format("unknown type: %s", play.type()));
         };
     }
 
