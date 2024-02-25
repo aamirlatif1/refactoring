@@ -26,28 +26,40 @@ public class Statement {
         }
 
         public String generator() {
-            var totalAmount = 0;
-            var volumeCredits = 0;
 
 
             var result = String.format("Statement for %s\n", invoice.getCustomer());
 
             for (var perf : invoice.getPerformances()) {
-                volumeCredits += volumeCreditsFor( perf);
-
                 // print line for this order
                 result += String.format("  %s: %s (%s seats)\n",
-                        playFor(perf).getName(), format(amountFor(perf) / 100), perf.getAudience());
+                        playFor(perf).getName(), usd(amountFor(perf)), perf.getAudience());
 
-                totalAmount += amountFor(perf);
             }
-            result += String.format("Amount owed is %s\n", format(totalAmount / 100));
-            result += String.format("You earned %s credits\n", volumeCredits);
+
+            result += String.format("Amount owed is %s\n", usd(totalAmount()));
+            result += String.format("You earned %s credits\n", totalVolumeCredits());
             return result;
         }
 
-        private String format(int number) {
-            return NumberFormat.getCurrencyInstance(Locale.US).format(number);
+        private int totalAmount() {
+            var result = 0;
+            for (var perf : invoice.getPerformances()) {
+                result += amountFor(perf);
+            }
+            return result;
+        }
+
+        private int totalVolumeCredits() {
+            var result = 0;
+            for (var perf : invoice.getPerformances()) {
+                result += volumeCreditsFor(perf);
+            }
+            return result;
+        }
+
+        private String usd(int number) {
+            return NumberFormat.getCurrencyInstance(Locale.US).format(number / 100);
         }
 
         private int volumeCreditsFor(Performance aPerformance) {
@@ -79,7 +91,8 @@ public class Statement {
                     }
                     result += 300 * aPerformance.getAudience();
                 }
-                default -> throw new RuntimeException(String.format("unknown type: %s", playFor(aPerformance).getType()));
+                default ->
+                        throw new RuntimeException(String.format("unknown type: %s", playFor(aPerformance).getType()));
             }
             return result;
         }
